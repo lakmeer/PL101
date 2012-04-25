@@ -5,12 +5,13 @@ Coursework, homework and whatever else for Nathan's University course PL101.
 My work is implemented in Coffeescript, and run with the npm binary 'coffee'
 instead of node. 
 
-	Installing npm 'coffee':
-	$ sudo npm install coffee-script -g
+Installing npm 'coffee':
+
+    $ sudo npm install coffee-script -g
 
 Handy rapid iteration tip for Vim users:
 
-	" Run current coffeescript file
+    " Run current coffeescript file
     :map <F5> :!coffee %<CR>
 
 
@@ -24,7 +25,7 @@ Lesson 2
 --------
 
 Source for all lesson exercises, and MUS to NOTE compiler.
-Modularised the MUS compiler to a node module
+Modularised the MUS compiler to a node module callable as `compile = require 'compiler'`.
 
 
 Lesson 3
