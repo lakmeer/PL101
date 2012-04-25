@@ -1,0 +1,34 @@
+
+/*
+ * Scheem Parser
+ *
+ * Starting with Exercise 5 and extended
+ * with homework exercises
+ *
+ */
+
+start =
+  _ args:argument+
+    { return args; }
+
+quote_expr =
+  "'" expr:expression
+    { return [ 'quote', expr ]; }
+
+expression =
+  "(" _ args:argument+ _ ")" _
+    { return args; }
+
+argument = atom / expression / quote_expr
+
+atom = chars:validchar+ _
+  { return chars.join(""); }
+
+comment = ";;" [^\n]* [\n]
+
+nl = [\r\n]
+sp = [ \t]
+_  = ( nl / sp / comment )*
+
+validchar = [0-9a-zA-Z_?!+\-=@#$%^&*/.]
+

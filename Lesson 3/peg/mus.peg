@@ -1,0 +1,37 @@
+/*
+ * MUS Musical Syntax Parser
+ *
+ * Description of syntax:
+ *
+ * a4:500 = a note, octave 4 for 500ms
+ *
+ * a4:500+a5:500 = a4 + a5 chord
+ *
+ */
+
+
+/* INCOMPLETE */
+
+
+
+start = note / num / tone
+
+note = pitch:tone ':' dur:num
+    { return { tag: 'note', pitch: pitch, dur: dur }; }
+
+
+seq = car:note _* cdr:seq*
+    { if (cdr.length < 1) return car;
+      return { tag : 'seq', left : car, right : cdr[0] };  }
+
+rest = '_'
+
+num = d:[0-9]+
+    { return parseInt(d.join('')); }
+
+oct = [0-9]
+
+tone = letter:[a-g] octave:oct
+    { return letter + ("" + octave); }
+
+_ = ' '
