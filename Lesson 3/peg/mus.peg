@@ -1,37 +1,50 @@
 /*
  * MUS Musical Syntax Parser
  *
- * Description of syntax:
- *
- * a4:500 = a note, octave 4 for 500ms
- *
- * a4:500+a5:500 = a4 + a5 chord
- *
  */
 
 
-/* INCOMPLETE */
+/* STILL INCOMPLETE */
 
 
-
-start = note / num / tone
-
-note = pitch:tone ':' dur:num
-    { return { tag: 'note', pitch: pitch, dur: dur }; }
+start = atom
 
 
-seq = car:note _* cdr:seq*
-    { if (cdr.length < 1) return car;
-      return { tag : 'seq', left : car, right : cdr[0] };  }
+atom = note / rest / par / phrase / repeat
 
-rest = '_'
 
-num = d:[0-9]+
-    { return parseInt(d.join('')); }
+phrase =
+    '[' _ car:seq ']'
+        { return car; }
 
-oct = [0-9]
+repeat =
+        times:int '*' section:atom
+        { return { tag: 'repeat', times: times, section: section }; }
 
-tone = letter:[a-g] octave:oct
-    { return letter + ("" + octave); }
+seq =
+    car:atom cdr:tail*
+        { return (cdr.length < 1) ? car : { tag: 'seq', left: car, right: cdr[0] }; }
 
-_ = ' '
+par =
+    left:phrase _ '+' _ right:phrase
+        { return { tag: 'par', left: left, right: right }; }
+
+rest =
+    '_:' dur:int _
+        { return { tag: 'rest', dur: dur }; }
+
+note =
+    pitch:tone ':' dur:int _
+        { return { tag: 'note', pitch: pitch, dur: dur }; }
+
+tail =
+    ',' _ a:seq
+        { return a; }
+
+
+tone  = pitch:[a-g] oct:digit { return pitch + oct; }
+int   = digits:digit+ { return parseInt(digits.join('')); }
+digit = [0-9]
+
+_ = [ \n\t]*
+

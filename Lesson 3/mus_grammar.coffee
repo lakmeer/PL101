@@ -25,19 +25,19 @@ parse = require('pegparser') 'peg/mus.peg'
 
 
 test "raw numbers", ->
-    assert.equal parse(  '0', 'num'), 0
-    assert.equal parse(  '1', 'num'), 1
-    assert.equal parse(  '2', 'num'), 2
-    assert.equal parse( '10', 'num'), 10
-    assert.equal parse('100', 'num'), 100
-    assert.equal parse('500', 'num'), 500
+    assert.equal parse(  '0', 'int'), 0
+    assert.equal parse(  '1', 'int'), 1
+    assert.equal parse(  '2', 'int'), 2
+    assert.equal parse( '10', 'int'), 10
+    assert.equal parse('100', 'int'), 100
+    assert.equal parse('500', 'int'), 500
 
 test "raw note values", ->
     assert.equal parse('a1', 'tone'), 'a1'
     assert.equal parse('d2', 'tone'), 'd2'
 
 test "raw rest char", ->
-    assert.equal parse('_', 'rest'), '_'
+    assert.deepEqual parse('_:340', 'rest'), { tag : 'rest', dur : 340 }
 
 test "single note syntax", ->
     assert.deepEqual parse('a4:200', 'note'), { tag : 'note', pitch : 'a4', dur : 200 }
@@ -45,7 +45,7 @@ test "single note syntax", ->
 
 test "note sequence", ->
     assert.deepEqual(
-        parse('c4:300 e4:300 g4:300', 'seq')
+        parse('[ c4:300, e4:300, g4:300 ]')
         tag : 'seq'
         left : { tag : 'note', pitch : 'c4', dur : 300 }
         right :
@@ -54,7 +54,11 @@ test "note sequence", ->
             right : { tag : 'note', pitch : 'g4', dur : 300 }
     )
 
-
+test "repeat blocks", ->
+    assert.deepEqual parse('3*[c3:333]'),
+        tag : 'repeat'
+        times : '3'
+        section : { tag : 'note', pitch : 'c3', dur : 333 }
 
 
 
