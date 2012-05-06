@@ -1,0 +1,16 @@
+/* Based on Sublime Text's output output */
+
+.cm-s-output                         { background: #eeffee; color: black; }
+.cm-s-output div.CodeMirror-selected { background: #66ff66; }
+.cm-s-output .CodeMirror-gutter      { background: #ddffdd; border-right: 1px solid #ddffdd; }
+.cm-s-output .CodeMirror-gutter-text { color: #005500; }
+.cm-s-output .CodeMirror-cursor      { border-left: 1px solid black !important; }
+
+
+.error .cm-s-output                         { background: #ffeeee; color: black; }
+.error .cm-s-output div.CodeMirror-selected { background: #ff6666; }
+.error .cm-s-output .CodeMirror-gutter      { background: #ffdddd; border-right: 1px solid #ffdddd; }
+.error .cm-s-output .CodeMirror-gutter-text { color: #550000; }
+.error .cm-s-output .CodeMirror-cursor      { border-left: 1px solid black !important; }
+
+

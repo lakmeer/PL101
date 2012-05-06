@@ -1,9 +1,0 @@
-
-// Exercise 2 - Accept 2-character country codes (lowercase)
-
-start = countrycode
-char  = [a-z]
-countrycode =
-    first:char second:char
-        { return first + second; }
-

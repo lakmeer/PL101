@@ -1,0 +1,36 @@
+
+/* Based on Sublime Text's theme theme */
+
+.cm-s-theme                         { background: #212121; color: #f8f8f8; }
+.cm-s-theme div.CodeMirror-selected { background: #444444 !important; }
+.cm-s-theme .CodeMirror-gutter      { background: #313131; border-right: 1px solid #323232; }
+.cm-s-theme .CodeMirror-gutter-text { color: #666666; }
+.cm-s-theme .CodeMirror-cursor      { border-left: 1px solid #f8f8f8 !important; }
+
+
+.bright { color: #66bbff; }
+.light  { color: #aaddff; }
+.blue   { color: #5577ee; }
+.dark   { color: #111155; }
+
+/* Comment */
+
+.ndark { color: #666666; }
+
+.cm-s-theme span.cm-comment    { color: #666666; }
+.cm-s-theme span.cm-atom       { color: #aaddff; }
+.cm-s-theme span.cm-number     { color: #aaddff; }
+
+.cm-s-theme span.cm-builtin    { color: #66bbff; }
+
+.cm-s-theme span.cm-property   { color: #a6e22e; }
+.cm-s-theme span.cm-attribute  { color: #a6e22e; }
+.cm-s-theme span.cm-keyword    { color: #66bbff; }
+.cm-s-theme span.cm-string     { color: #5577ee; }
+
+.cm-s-theme span.cm-def        { color: #fd971f; }
+.cm-s-theme span.cm-bracket    { color: #bbbbbb; }
+
+.cm-s-theme span.cm-error      { background: #dd3333; color: #f8f8f0; }
+
+.cm-s-theme .CodeMirror-matchingbracket { font-weight: bold; color: #5577ee !important; }

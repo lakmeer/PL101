@@ -1,5 +1,0 @@
-
-// Exercise 1 - Accept uppercase characters
-
-start = char
-char  = [A-Z]

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Scheem Live Interpreter</title>
+    <link href="css/style.css" rel="stylesheet" />
+    <link href="css/codemirror/codemirror.css" rel="stylesheet" />
+    <link href="css/codemirror/theme.css" rel="stylesheet" />
+    <link href="css/codemirror/output.css" rel="stylesheet" />
+    <script src="lib/live.js#js,html,css"></script>
+
+
+<!-- Scheem Examples -->
+
+<script type="text/x-scheem" data-name="Minimal" id="min">
+;; A minimal example
+
+(+ 1 2)
+</script>
+
+<script type="text/x-scheem" data-name="Default" id="default">
+;; Type here to see live updates
+
+(begin
+    (def x (+ 20 20))
+    (def y
+         (if #t
+             (* x x)
+             1))
+    (set! x (+ y 1))
+    x
+)
+</script>
+
+<script type="text/x-scheem" data-name="Erroneous" id="error">
+;; This code has syntax errors
+
+(+ ) 2)
+</script>
+
+
+
+
+
+</head>
+<body>
+    <h1>Scheem Tester</h1>
+
+    <div id="editor-area">
+    </div>
+
+    <div id="env-area">
+    </div>
+
+    <div id="output-area">
+    </div>
+
+
+    <script src="bin/scheem.js"></script>
+
+
+</body>
+</html>

@@ -1,0 +1,55 @@
+start =
+  _ expr:expression _
+    { return expr; }
+
+space_expr
+  = _ expr:expression
+    { return expr; }
+
+quote_expr
+  = "'" expr:expression
+    { return [ 'quote', expr ]; }
+
+expression
+  = list
+  / atom
+  / quote_expr
+
+
+list
+  = _ "(" _ car:expression cdr:space_expr* _ ")"
+    { cdr.unshift(car); return cdr; }
+
+atom
+  = number
+  / not_number
+
+number
+  = negative:'-'? digits:digit+ decimal:('.' digit+)? _
+    {
+      var n = (negative.length > 0) ? -1 : 1;
+      if (decimal.length > 0) {
+        return Number( digits.join('') + '.' + decimal[1].join('')) * n;
+      }
+      return parseInt(digits.join('')) * n;
+    }
+
+not_number
+  = a:validchar b:(validchar / digit)*
+    { return a + b.join('') }
+
+_
+  = (whitespace+ / comment+)*
+
+comment
+  = ";;" [^\n\r]*
+
+whitespace
+  = [ \t\r\n]
+
+digit
+  = [0-9]
+
+validchar
+  = [a-zA-Z_?!+\=@#$%^&*/.<>λ-]
+
