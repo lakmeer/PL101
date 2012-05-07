@@ -1,9 +1,9 @@
 
 /* Based on Sublime Text's theme theme */
 
-.cm-s-theme                         { background: #212121; color: #f8f8f8; }
+.cm-s-theme                         { background: #212121; color: #f8f8f8 !important; border-radius: 5px; }
 .cm-s-theme div.CodeMirror-selected { background: #444444 !important; }
-.cm-s-theme .CodeMirror-gutter      { background: #313131; border-right: 1px solid #323232; }
+.cm-s-theme .CodeMirror-gutter      { background: #313131; border-right: 1px solid #323232; border-radius: 5px 0 0 5px; }
 .cm-s-theme .CodeMirror-gutter-text { color: #666666; }
 .cm-s-theme .CodeMirror-cursor      { border-left: 1px solid #f8f8f8 !important; }
 

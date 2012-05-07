@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8" />
     <title>Scheem Live Interpreter</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet" />
     <link href="css/style.css" rel="stylesheet" />
     <link href="css/codemirror/codemirror.css" rel="stylesheet" />
     <link href="css/codemirror/theme.css" rel="stylesheet" />
-    <link href="css/codemirror/output.css" rel="stylesheet" />
-    <script src="lib/live.js#js,html,css"></script>
+    <script src="lib/live.js#js,html"></script>
 
 
 <!-- Scheem Examples -->
@@ -18,46 +18,115 @@
 (+ 1 2)
 </script>
 
-<script type="text/x-scheem" data-name="Default" id="default">
-;; Type here to see live updates
-
-(begin
-    (def x (+ 20 20))
-    (def y
-         (if #t
-             (* x x)
-             1))
-    (set! x (+ y 1))
-    x
-)
-</script>
-
 <script type="text/x-scheem" data-name="Erroneous" id="error">
 ;; This code has syntax errors
 
 (+ ) 2)
 </script>
 
+<script type="text/x-scheem" data-name="Factorial" id="fact">
+;; Factorial function
 
+(begin
+
+  (def factorial
+    (lambda (n)
+      (if (= n 1) 1
+          (* n (factorial (- n 1))))))
+
+  (factorial 5)
+
+)
+</script>
+
+<script type="text/x-scheem" data-name="Fibonacci" id="fib">
+;; Recursive Fibonacci calculator, featuring
+;; helper functions and "λ" lambda shorthand
+
+(begin
+
+  (def sub1
+    (λ (n) (- n 1)))
+
+  (def sub2
+    (λ (n) (- (sub1 n) 1)))
+
+  (def fib
+    (λ (n)
+      (if (< n 2) n
+          (+ (fib (sub1 n)) (fib (sub2 n))))))
+
+  (fib 10)
+
+)
+</script>
 
 
 
 </head>
 <body>
-    <h1>Scheem Tester</h1>
-
-    <div id="editor-area">
+    <div class="navbar navbar-fixed-top">
+        <div class="navbar-inner">
+            <div class="container">
+                <a class="brand" href="#">Scheem</a>
+                <ul class="nav">
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#instructions">Instructions</a></li>
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown">Examples</a>
+                        <ul class="dropdown-menu" id="examples">
+                        </ul>
+                    </li>
+                </ul>
+                <ul class="nav pull-right">
+                    <li><a href="http://nathansuniversity.com/">Nathan's University</a></li>
+                </ul>
+            </div>
+        </div>
     </div>
 
-    <div id="env-area">
-    </div>
+    <div class="container pad-top">
 
-    <div id="output-area">
-    </div>
+        <div class="row">
+            <div class="span8" id="editor-area"> </div>
+            <div class="span4" id="output-area"> </div>
+            <div class="span4" id="env-area">
+                <p style="padding:20px">
+                    This section will be used to display the environment when I work out a good way to output it
+                </p>
+            </div>
+        </div>
 
+        <hr />
+
+        <div class="row">
+            <div class="span12">
+                <h2 id="about">Welcome to my Scheem Interpreter</h2>
+                <p>
+                    Scheem is a toy Scheme-like language developed as part of
+                    <a href="http://nathansuniversity.com/">Nathan's University</a>
+                    PL101 Programming Languages course.
+                </p>
+                <br />
+                <h3 id="instructions">Some instructions:</h3>
+                <ul>
+                    <li>This interpreter is live-updating. Type in left side to change the program.</li>
+                    <li><code>λ</code> is supported as an abbreviation of <code>lambda</code> (use <strong>CTRL+L</strong> to type it)</li>
+                    <li>Intesive recursive calculations will totally lock up your browser.</li>
+                    <li><code>def</code> is supported as an alias of <code>define</code></li>
+                    <li><code>program</code> is an alias of <code>begin</code>. There is no compelling reason for this.</li>
+                </ul>
+                <br />
+                <h4>Thanks</h4>
+                <p><strong>Layout:</strong> <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap</a></p>
+                <p><strong>Editor:</strong> <a href="http://codemirror.net">CodeMirror</a></p>
+                <p><strong>Help:  </strong> Various inpirational projects from coursemates at <a href="http://nathansuniversity.com/vanilla/">NU Forums</a></p>
+            </div>
+        </div>
+
+    </div>
 
     <script src="bin/scheem.js"></script>
-
 
 </body>
 </html>

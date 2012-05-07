@@ -26,9 +26,12 @@ project =
         "lib/jquery.js"
         "lib/codemirror/codemirror.js"
         "lib/codemirror/modes/scheem.js"
-        "lib/peg.js"
 
+        # JS Source
         "src/peg/scheem.js"
+        "src/bootstrap.dropdown.js"
+
+        # Coffee Source
         "src/helpers.coffee"
         "src/interpreter.coffee"
         "src/program.coffee"

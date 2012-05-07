@@ -36,12 +36,6 @@ cm_editor = CodeMirror( document.getElementById('editor-area'),
     onChange      : debounce(500, (cm) -> pub('code-update', cm.getValue()))
 )
 
-cm_output = CodeMirror( document.getElementById('output-area'),
-    theme : 'output'
-    gutter : yes
-    readOnly : yes
-    height: 100
-)
 
 
 
@@ -52,25 +46,56 @@ CodeMirror.keyMap.default['Ctrl-L'] = (cm) -> cm.replaceSelection "λ", 'end'
 
 # Start with example program
 
-cm_editor.setValue examples.default.source
+cm_editor.setValue examples.fib.source
+
+# Display example programs as options
+
+for id, ex of examples
+    $btn = $("<li data-example='#{ id }'><a>#{ ex.name }</a></li>")
+    $('#examples').append($btn)
+    $btn.click ->
+        cm_editor.setValue examples[$(this).data('example')].source
 
 
 # Compile program
 
+
+newAlert = (type, text) ->
+    $("<div class='alert alert-#{ type }'>#{ text }</div>")
+
+showAlert = (container, $alert) ->
+
+    $con = $(container)
+    $con.children().slideUp 100, -> $(this).remove()
+
+    $con.prepend $alert.hide()
+    $alert.slideDown(100)
+
+
 evaluate = (source)->
+
     try
         val = e p source
-        $('#output-area').removeClass('error')
-        cm_output.setValue "Result:\n\n" + String(val)
+        showAlert '#output-area', newAlert 'success', val
+
     catch ex
-        $('#output-area').addClass('error')
         if ex.name is 'SyntaxError'
-            cm_output.setValue "Syntax error:\n\n" + String(ex).replace("SyntaxError: ", "Expected one of:\n  ").replace(/\,/g, '\n  ')
+            exStr = "<strong>Syntax error</strong>: " + String(ex).replace("SyntaxError: ", "Expected one of:\n  ").replace(/\,/g, '\n  ')
+            showAlert '#output-area', newAlert 'error', exStr
+
         else
-            cm_output.setValue "Scheem error:\n\n" + String(ex)
+            exStr = "<strong>Scheem error</strong>: " + String(ex)
+            showAlert '#output-area', newAlert 'error', exStr
+
+
+
 
 sub 'code-update', (msg) -> evaluate msg
 
+
+# Activate Bootstrap interface enhancements
+
+$('.dropdown-toggle').dropdown()
 
 
 

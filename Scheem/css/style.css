@@ -1,14 +1,26 @@
 
 
-#editor-area {
-    width: 500px;
-    height: 500px;
-    margin: 20px;
-    float: left;
+code, pre { color: inherit; }
+.alert { box-shadow: 3px 3px 7px rgba(0, 0, 0, 0.5); font-size: 16px; }
+
+.pad-top {
+    padding-top: 60px;
 }
 
-#output-area {
-    width: 500px;
-    margin: 20px;
-    float: right;
+.row { padding: 20px 0; margin-bottom: 20px; }
+
+
+h2, h3, h4 {
+    margin-bottom: 0.5em;
 }
+
+hr { margin-bottom: 0; }
+
+#output-area { height: 60px; }
+#env-area {
+    background: #eee;
+    height: 240px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.5) inset;
+    border-radius: 5px;
+}
+

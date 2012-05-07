@@ -4,6 +4,15 @@
 # Interpreter helper functions
 #
 
+isEmpty = (obj) -> return !obj? or obj.length < 1
+
+contains = (list, target) ->
+    for k, v of list
+        if k is target then return yes
+    return no
+
+bool = (test) -> if test then '#t' else '#f'
+
 
 
 # Debugging output flag
@@ -13,15 +22,66 @@ DEBUG = off
 
 
 #
+# Initial Environment
+#
+
+initEnv =
+
+    'add'      : (args...) -> args.reduce (r, a) -> r + a
+    'subtract' : (args...) -> args.reduce (r, a) -> r - a
+    'multiply' : (args...) -> args.reduce (r, a) -> r * a
+    'divide'   : (args...) -> args.reduce (r, a) -> r / a
+
+    'cons' : (l, r) -> [ l ].concat r
+    'car'  : (list) -> list[0]
+    'cdr'  : (list) -> list.shift(); list
+
+    'eq' : (a, b) -> bool a is b
+    'gt' : (a, b) -> bool a >  b
+    'lt' : (a, b) -> bool a <  b
+
+    'neq' : (a, b) -> bool a isnt b
+    'gte' : (a, b) -> bool a >= b
+    'lte' : (a, b) -> bool a <= b
+
+
+
+# Aliases
+
+initEnv['+']  = initEnv.add
+initEnv['-']  = initEnv.subtract
+initEnv['*']  = initEnv.multiply
+initEnv['/']  = initEnv.divide
+
+initEnv['=']  = initEnv.eq
+initEnv['>']  = initEnv.gt
+initEnv['<']  = initEnv.lt
+
+initEnv['!='] = initEnv.neq
+initEnv['>='] = initEnv.gte
+initEnv['<='] = initEnv.lte
+
+
+
+
+
+
+
+
+#
 # Environment Helpers
 #
 
 lookup = (env, name) ->
 
-    if !env? then return null
+    if isEmpty(env)
+        if contains initEnv, name
+            return initEnv[name]
+        else
+            return null
 
-    for v of env.vars
-        if v is name then return env.vars[name]
+    if contains env.bindings, name
+        return env.bindings[name]
 
     return lookup env.outer, name
 
@@ -31,7 +91,7 @@ store = (env, name, value) ->
     if lookup(env, name) isnt null
         throw new Error "variable #{ name } already defined"
 
-    env.vars[name] = value
+    env.bindings[name] = value
 
 
 update = (env, name, value) ->
@@ -39,22 +99,24 @@ update = (env, name, value) ->
     if lookup(env, name) is null
         throw new Error "variable #{ name } not yet defined"
 
-    for v of env.vars
-        if v is name then env.vars[name] = value
+    if contains env.bindings, name
+        return env.bindings[name] = value
+
+    return update env.outer, name, value
 
 
 new_binding = (env, name, value) ->
 
-    env.outer = { vars : env.vars, outer : env.outer }
-    env.vars = {}
-    env.vars[name] = value
+    env.outer = { bindings : env.bindings, outer : env.outer }
+    env.bindings = {}
+    env.bindings[name] = value
 
 
 #
 # Create default environment (builtins etc)
 #
 
-defEnv = { vars : {}, outer : null }
+defEnv = { bindings : {}, outer : {} }
 
 
 
@@ -62,7 +124,7 @@ defEnv = { vars : {}, outer : null }
 # Eval function return result of evaluating parse tree of Scheem expression
 #
 
-e = (expr, env = { vars : {} }) ->
+e = (expr, env = { bindings : {} }) ->
 
     if DEBUG is on then console.log "\r>> expr =", expr
 
@@ -95,40 +157,16 @@ e = (expr, env = { vars : {} }) ->
             update env, expr[1], e expr[2], env
             expr[2]
 
-
-        # Numeric operations
-
-        when '+'
-            e(expr[1], env) + e(expr[2], env)
-
-        when '-'
-            e(expr[1], env) - e(expr[2], env)
-
-        when '*'
-            e(expr[1], env) * e(expr[2], env)
-
-        when '/'
-            e(expr[1], env) / e(expr[2], env)
+        when 'let-one'
+            localScope = { bindings : {}, outer : env }
+            localScope.bindings[expr[1]] = e(expr[2], env)
+            e(expr[3], localScope)
 
 
         # Meta operations
 
         when 'quote'
             expr[1]
-
-
-        # List operations
-
-        when 'cons'
-            [e expr[1], env].concat e expr[2], env
-
-        when 'car'
-            e(expr[1])[0]
-
-        when 'cdr'
-            list = e(expr[1], env)
-            list.shift()
-            list
 
 
         # Conditionals
@@ -139,21 +177,33 @@ e = (expr, env = { vars : {} }) ->
             else
                 e expr[3], env
 
-        when '='
-            if e(expr[1], env) is e(expr[2], env) then '#t' else '#f'
 
-        when '>'
-            if e(expr[1], env) >  e(expr[2], env) then '#t' else '#f'
+        # Functions
 
-        when '<'
-            if e(expr[1], env) <  e(expr[2], env) then '#t' else '#f'
+        when 'lambda-one'
+            (arg) ->
+                captureEnv = { bindings : {}, outer : env }
+                captureEnv.bindings[expr[1]] = arg
+                e(expr[2], captureEnv)
+
+
+        when 'lambda', 'λ'
+            (args...) ->
+                captureEnv = { bindings : {}, outer : env }
+                for lvar, ix in expr[1]
+                    captureEnv.bindings[lvar] = args[ix]
+                e(expr[2], captureEnv)
 
 
         # Unrecognised operator
 
         else
-            throw new Error "Unknown operator: #{ expr[0] }"
-            0
+            fn = e(expr[0], env)
+            if fn is null then throw new Error "Unknown operator: #{ expr[0] }"
+            args = expr.map (subexpr) -> e(subexpr, env)
+            args.shift()
+            fn.apply null, args
+
 
 
 

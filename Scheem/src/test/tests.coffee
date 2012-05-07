@@ -101,9 +101,9 @@ suite 'Lists -', ->
 suite 'Environment -', ->
 
     test 'dereference variable from environment', ->
-        assert.equal e(p("    x    "), { vars : { x : 10 } }), 10
-        assert.equal e(p(" (+ x 1) "), { vars : { x : 10 } }), 11
-        assert.equal e(p(" (* x x) "), { vars : { x : 10 } }), 100
+        assert.equal e(p("    x    "), { bindings : { x : 10 } }), 10
+        assert.equal e(p(" (+ x 1) "), { bindings : { x : 10 } }), 11
+        assert.equal e(p(" (* x x) "), { bindings : { x : 10 } }), 100
 
     test 'store variables with define', ->
         assert.deepEqual e(p(" (begin (define x 200) x) ")), 200
@@ -131,6 +131,16 @@ suite 'Environment -', ->
                 x
               )
             """)), 4
+
+    test 'local scoping with let-one', ->
+        assert.equal e(p(" (let-one x 4 x) ")), 4
+        assert.equal e(p(" (begin (let-one x 4 x) x)" )), null
+
+    test 'outer scope intact after scoping with let-one', ->
+        assert.equal e(p(" (begin (define x 4) (let-one x 8 x) x) ")), 4
+        assert.equal e(p(" (begin (define x 4) (let-one y 8 y) y) ")), null
+
+
 
 
 suite 'Conditionals -', ->
@@ -167,7 +177,7 @@ suite 'Errors -', ->
     test 'Restrict define and set! to proper uses', ->
 
         expect(-> e(p(" (set! x 1) "))).to.throw('not yet defined')
-        expect(-> e(p(" (def x 1) "), { vars : { x:2 } })).to.throw('already defined')
+        expect(-> e(p(" (def x 1) "), { bindings : { x:2 } })).to.throw('already defined')
 
         expect(-> e(p(
             """
@@ -181,6 +191,64 @@ suite 'Errors -', ->
 
 suite 'Functions -', ->
 
-    test 'lambda-one'
+    test 'lambda-one', ->
+        assert.equal e(p(" (lambda-one x (+ x 3)) "))(4), 7
+        assert.deepEqual e(p(" (lambda-one x (cons '(1 2 3) x)) "))(4), [[1,2,3],4]
+
+    test 'lambda', ->
+
+        assert.equal e(p(" (lambda (x y) (+ (* x x) (* y y))) "))(2, 3), 13
+        assert.equal e(p(" (lambda (w x y z) (+ w x y z)) "))(1, 2, 3, 4), 10
+
+        assert.equal e(p(" (λ (x) (+ 1 x)) "))(1), 2
+
+    test 'a small program using λ', ->
+
+        assert.equal e(p("""
+          (program
+            (def sumsq
+              (λ (x y)
+                (+ (* x x)
+                   (* y y))))
+            (sumsq 10 5)
+          )
+        """)), 125
 
 
+
+suite 'Recursion -', ->
+
+    test 'recursive factorial', ->
+
+        assert.equal e(p("""
+          (begin
+            (def factorial
+              (λ (n)
+                (if (= n 1) 1
+                    (* n (factorial (- n 1))))))
+            (factorial 5)
+          )
+        """)), 120
+
+
+    test 'recursive fibonacci with helper functions', ->
+
+        assert.equal e(p("""
+
+          (begin
+
+            (def sub1
+              (λ (n) (- n 1)))
+
+            (def sub2
+              (λ (n) (- (sub1 n) 1)))
+
+            (def fib
+              (λ (n)
+                (if (< n 2) n
+                    (+ (fib (sub1 n)) (fib (sub2 n))))))
+
+            (fib 10)
+
+          )
+        """)), 55
