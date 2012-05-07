@@ -1,0 +1,51 @@
+/*
+ * MUS Musical Syntax Parser
+ *
+ */
+
+
+/* STILL INCOMPLETE */
+
+
+start = atom
+
+
+atom = note / rest / par / seq / repeat
+
+tail = _ a:atom { return a; }
+
+phrase =
+    '[' _ car:atom cdr:tail ']'
+        { return car; }
+
+repeat =
+        times:int '*' section:atom
+        { return { tag: 'repeat', times: times, section: section }; }
+
+seq =
+    car:atom cdr:tail*
+        { return (cdr.length < 1) ? car : { tag: 'seq', left: car, right: cdr[0] }; }
+
+par =
+    left:phrase _ '+' _ right:phrase
+        { return { tag: 'par', left: left, right: right }; }
+
+rest =
+    '_:' dur:int _
+        { return { tag: 'rest', dur: dur }; }
+
+note =
+    pitch:tone ':' dur:int _
+        { return { tag: 'note', pitch: pitch, dur: dur }; }
+
+tail =
+    ',' _ a:seq
+        { return a; }
+
+
+tone  = pitch:[a-g] oct:digit { return pitch + oct; }
+int   = digits:digit+ { return parseInt(digits.join('')); }
+digit = [0-9]
+
+_ = [ \n\t]*
+
